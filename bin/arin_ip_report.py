@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import sys          # reads command-line args
-import ConfigParser
 import os
 
 from neutronclient.v2_0 import client as neutronclient

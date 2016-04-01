@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 
-import ConfigParser
 import argparse
 import os
 from cinderclient.v1 import client
 from sqlalchemy import create_engine, distinct, select, MetaData, Table
-
-config = ConfigParser.ConfigParser()
-config.read(['os.cfg',os.path.expanduser('~/.os.cfg'),'/etc/os-maint/os.cfg'])
 
 parser = argparse.ArgumentParser(description='Cinder Quota Sync')
 tenant_group = parser.add_mutually_exclusive_group(required=True)
@@ -16,12 +12,7 @@ tenant_group.add_argument('--all', action='store_true', default=False, help='Wor
 parser.add_argument('--verbose', '-v', action='count', default=0, help='Verbose')
 args = parser.parse_args()
 
-cinder_db_conn = config.get('CINDER', 'db_connection')
-os_user_name = config.get('OPENSTACK', 'os_user_name')
-os_password = config.get('OPENSTACK', 'os_password')
-os_tenant_name = config.get('OPENSTACK', 'os_tenant_name')
-os_auth_url = config.get('OPENSTACK', 'os_auth_url')
-os_region_name = config.get('OPENSTACK', 'os_region_name')
+cinder_db_conn = os.getenv('CINDER_DB_CONNECTION')
 
 if args.verbose >= 2:
   sql_echo = True
@@ -39,7 +30,7 @@ quota_usages = Table(
 )
 
 
-cc = client.Client(os_user_name, os_password, os_tenant_name, os_auth_url, service_type='volume')
+cc = client.Client(os.getenv('OS_USERNAME'), os.getenv('OS_PASSWORD'), os.getenv('OS_TENANT_NAME'), os.getenv('OS_AUTH_URL'), service_type='volume')
 usage = dict()
 
 if args.all:

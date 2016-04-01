@@ -1,37 +1,25 @@
 #!/usr/bin/env python
 
-import ConfigParser
 import os
 import sys
 
-config = ConfigParser.ConfigParser()
-config.read(['os.cfg',
-    os.path.expanduser('~/.os.cfg'),
-    '/etc/os-maint/os.cfg'])
-
-os_user_name = config.get('OPENSTACK', 'os_user_name')
-os_password = config.get('OPENSTACK', 'os_password')
-os_tenant_name = config.get('OPENSTACK', 'os_tenant_name')
-os_auth_url = config.get('OPENSTACK', 'os_auth_url')
-os_region_name = config.get('OPENSTACK', 'os_region_name')
-
 from neutronclient.v2_0 import client as neutronclient
-nc = neutronclient.Client(username=os_user_name,
-                   password=os_password,
-                   tenant_name=os_tenant_name,
-                   auth_url=os_auth_url)
+nc = neutronclient.Client(username=os.getenv('OS_USERNAME'),
+                   password=os.getenv('OS_PASSWORD'),
+                   tenant_name=os.getenv('OS_TENANT_NAME'),
+                   auth_url=os.getenv('OS_AUTH_URL'))
 
 from novaclient.v1_1 import client as novaclient
-novac = novaclient.Client(os_user_name,
-                      os_password,
-                      os_tenant_name,
-                      os_auth_url
+novac = novaclient.Client(os.getenv('OS_USERNAME'),
+                      os.getenv('OS_PASSWORD'),
+                      os.getenv('OS_TENANT_NAME'),
+                      os.getenv('OS_AUTH_URL')
                       )
 from keystoneclient.v2_0 import client
-keystone = client.Client(username=os_user_name,
-                         password=os_password,
-                         tenant_name=os_tenant_name,
-                         auth_url=os_auth_url
+keystone = client.Client(username=os.getenv('OS_USERNAME'),
+                         password=os.getenv('OS_PASSWORD'),
+                         tenant_name=os.getenv('OS_TENANT_NAME'),
+                         auth_url=os.getenv('OS_AUTH_URL')
                          )
 glance_endpoint = keystone.service_catalog.get_endpoints('image').get('image')[0].get('internalURL')
 ## HACKITY HACK HACK HACK

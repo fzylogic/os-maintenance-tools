@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import ConfigParser
 import argparse
 import libvirt
 import os
@@ -14,24 +13,17 @@ parser.add_argument('--quiet', action='store_true', default=False, help='lose th
 parser.add_argument('--hypervisor', action='append', default=[], help='specify a hypervisor to check')
 args = parser.parse_args()
 
-config = ConfigParser.ConfigParser()
-config.read(['os.cfg',os.path.expanduser('~/.os.cfg'),'/etc/os-maint/os.cfg'])
 
-os_user_name = config.get('OPENSTACK', 'os_user_name')
-os_password = config.get('OPENSTACK', 'os_password')
-os_tenant_name = config.get('OPENSTACK', 'os_tenant_name')
-os_auth_url = config.get('OPENSTACK', 'os_auth_url')
-os_region_name = config.get('OPENSTACK', 'os_region_name')
-connection_template = config.get('NOVA', 'libvirt_connection_template')
+connection_template = os.getenv('NOVA_LIBVIRT_CONNECTION_TEMPLATE')
 
-graphite_enabled = config.get('GRAPHITE', 'enabled')
+graphite_enabled = os.getenv('GRAPHITE_ENABLED')
 if graphite_enabled == 'yes':
-  graphite_host = config.get('GRAPHITE', 'host')
-  graphite_port = config.get('GRAPHITE', 'port')
-  graphite_prefix = config.get('GRAPHITE', 'prefix')
+  graphite_host = os.getenv('GRAPHITE_HOST')
+  graphite_port = os.getenv('GRAPHITE_PORT')
+  graphite_prefix = os.getenv('GRAPHITE_PREFIX')
 
 from novaclient.v1_1 import client
-nc = client.Client(os_user_name, os_password, os_tenant_name, os_auth_url, service_type="compute")
+nc = client.Client(os.getenv('OS_USERNAME'), os.getenv('OS_PASSWORD'), os.getenv('OS_TENANT_NAME') , os.getenv('OS_AUTH_URL'), service_type="compute")
 hosts = []
 metrics = dict()
 

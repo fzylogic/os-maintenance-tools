@@ -1,20 +1,11 @@
 #!/usr/bin/env python
 
-import ConfigParser
 import os
 from cinderclient.v1 import client
 
-config = ConfigParser.ConfigParser()
-config.read(['os.cfg',os.path.expanduser('~/.os.cfg'),'/etc/os-maint/os.cfg'])
+cinder_db_conn = os.getenv('CINDER_DB_CONNECTION')
 
-cinder_db_conn = config.get('CINDER', 'db_connection')
-os_user_name = config.get('OPENSTACK', 'os_user_name')
-os_password = config.get('OPENSTACK', 'os_password')
-os_tenant_name = config.get('OPENSTACK', 'os_tenant_name')
-os_auth_url = config.get('OPENSTACK', 'os_auth_url')
-os_region_name = config.get('OPENSTACK', 'os_region_name')
-
-cc = client.Client(os_user_name, os_password, os_tenant_name, os_auth_url, service_type='volume')
+cc = client.Client(os.getenv('OS_USERNAME'), os.getenv('OS_PASSWORD'), os.getenv('OS_TENANT_NAME'), os.getenv('OS_AUTH_URL'), service_type='volume')
 volumes = []
 
 for vol in cc.volumes.list(True, {'all_tenants': '1'}):

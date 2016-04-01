@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import ConfigParser
 import argparse
 import os
 from novaclient.v1_1 import client
@@ -25,15 +24,7 @@ parser.add_argument('--config', '-c', action='store', dest='config_file',
                     help='Location(s) to look for configuration file')
 args = parser.parse_args()
 
-config = ConfigParser.ConfigParser()
-config.read(args.config_file)
-
-nova_db_conn = config.get('NOVA', 'db_connection')
-os_user_name = config.get('OPENSTACK', 'os_user_name')
-os_password = config.get('OPENSTACK', 'os_password')
-os_tenant_name = config.get('OPENSTACK', 'os_tenant_name')
-os_auth_url = config.get('OPENSTACK', 'os_auth_url')
-os_region_name = config.get('OPENSTACK', 'os_region_name')
+nova_db_conn = os.getenv('NOVA_DB_CONNECTION')
 
 if args.verbose >= 2:
     sql_echo = True
@@ -52,8 +43,8 @@ instances = Table('instances',
                   autoload=True,
                   autoload_with=engine)
 
-nc = client.Client(os_user_name, os_password, os_tenant_name,
-                   os_auth_url, service_type='compute')
+nc = client.Client(os.getenv('OS_USERNAME'), os.getenv('OS_PASSWORD'), os.getenv('OS_TENANT_NAME'),
+                   os.getenv('OS_AUTH_URL'), service_type='compute')
 
 usage_select = select([quota_usages])
 

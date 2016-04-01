@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import ConfigParser
 import argparse
 import os
 import sys
@@ -37,14 +36,6 @@ def get_os_vars():
                'OS_USERNAME': None,
                'OS_TENANT_NAME': None,
                'OS_SERVICE_TENANT_NAME': 'service'}
-
-    for os_var in os_vars.keys():
-        try:
-            config = ConfigParser.ConfigParser()
-            config.read(['os.cfg', os.path.expanduser('~/.os.cfg')])
-            os_vars[os_var] = config.get('OPENSTACK', os_var.lower())
-        except (ConfigParser.NoOptionError, ConfigParser.NoSectionError):
-            continue
 
     for os_var in os_vars.keys():
         try:
